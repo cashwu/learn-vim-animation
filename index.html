@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vim 操作動畫教學 — 62 支互動式示範</title>
+    <meta name="description" content="62 支互動式 Vim 操作動畫，搭配 6 篇系列文章，從基礎移動到效率倍增，一步步掌握 Vim。">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Vim 操作動畫教學 — 62 支互動式示範">
+    <meta property="og:description" content="62 支互動式 Vim 操作動畫，搭配 6 篇系列文章，從基礎移動到效率倍增，一步步掌握 Vim。">
+    <meta property="og:image" content="cover.webp">
+    <meta property="og:locale" content="zh_TW">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Vim 操作動畫教學 — 62 支互動式示範">
+    <meta name="twitter:description" content="62 支互動式 Vim 操作動畫，搭配 6 篇系列文章，從基礎移動到效率倍增，一步步掌握 Vim。">
+    <meta name="twitter:image" content="cover.webp">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', Consolas, monospace;
+            background: #dce0e8;
+            min-height: 100vh;
+            padding: 0;
+            color: #4c4f69;
+        }
+
+        .page-header {
+            background: #eff1f5;
+            border-bottom: 2px solid #ccd0da;
+            padding: 32px 20px 28px;
+            text-align: center;
+        }
+
+        .page-header h1 {
+            color: #8839ef;
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .page-header .subtitle {
+            color: #6c6f85;
+            font-size: 14px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 28px 24px 40px;
+        }
+
+        .category-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+            justify-content: center;
+        }
+
+        .article-link {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 13px;
+        }
+
+        .article-link a {
+            color: #209fb5;
+            text-decoration: none;
+        }
+
+        .article-link a:hover {
+            text-decoration: underline;
+        }
+
+        .category-btn {
+            background: #ccd0da;
+            color: #4c4f69;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+
+        .category-btn:hover {
+            background: #bcc0cc;
+        }
+
+        .category-btn.active {
+            background: #8839ef;
+            color: #eff1f5;
+        }
+
+        .demo-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 28px;
+            justify-content: center;
+        }
+
+        .demo-btn {
+            background: #bcc0cc;
+            color: #4c4f69;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .demo-btn:hover {
+            background: #acb0be;
+            transform: translateY(-1px);
+        }
+
+        .demo-btn.active {
+            background: #209fb5;
+            color: #eff1f5;
+        }
+
+        .vim-editor {
+            position: relative;
+            background: #eff1f5;
+            border: 1px solid #bcc0cc;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 12px rgba(76, 79, 105, 0.08), 0 1px 4px rgba(76, 79, 105, 0.04);
+        }
+
+        .vim-title {
+            background: #ccd0da;
+            padding: 14px 24px;
+            color: #8839ef;
+            font-weight: bold;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .vim-content {
+            padding: 40px 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 160px;
+        }
+
+        .line-number {
+            color: #6c6f85;
+            margin-right: 20px;
+            font-size: 24px;
+        }
+
+        .text-content {
+            font-size: 32px;
+            letter-spacing: 2px;
+            display: flex;
+        }
+
+        .char {
+            display: inline-block;
+            padding: 4px 3px;
+            border-radius: 4px;
+            min-width: 20px;
+            text-align: center;
+            transition: all 0.15s ease;
+        }
+
+        .char.cursor {
+            background: #dc8a78;
+            color: #eff1f5;
+        }
+
+        .char.cursor-insert {
+            position: relative;
+        }
+
+        .char.cursor-insert::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 2px;
+            bottom: 2px;
+            width: 3px;
+            background: #dc8a78;
+            border-radius: 2px;
+        }
+
+        .char.selected {
+            background: #bcc0cc;
+        }
+
+        .char.highlight {
+            background: #40a02b;
+            color: #eff1f5;
+        }
+
+        .vim-status {
+            background: #ccd0da;
+            padding: 8px 24px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: #6c6f85;
+        }
+
+        .key-indicator {
+            position: absolute;
+            bottom: 50px;
+            right: 16px;
+            background: #209fb5;
+            color: #eff1f5;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-size: 24px;
+            font-weight: bold;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.2s ease;
+            z-index: 100;
+        }
+
+        .key-indicator.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+
+        .ctrl-btn {
+            background: #8839ef;
+            color: #eff1f5;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .ctrl-btn:hover {
+            background: #7287fd;
+            transform: translateY(-2px);
+        }
+
+        .speed-btn {
+            background: #6c6f85;
+            color: #eff1f5;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .speed-btn:hover {
+            background: #5c5f77;
+            transform: translateY(-2px);
+        }
+
+        .speed-btn.active {
+            background: #209fb5;
+        }
+
+        .description {
+            text-align: center;
+            color: #5c5f77;
+            font-size: 16px;
+            padding: 12px 16px;
+            background: #e6e9ef;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .key-point {
+            background: #ccd0da;
+            border-left: 4px solid #df8e1d;
+            padding: 14px 20px;
+            margin-top: 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .key-point h3 {
+            color: #df8e1d;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .key-point p {
+            color: #5c5f77;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .key-point code {
+            background: #bcc0cc;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #d20f39;
+        }
+
+        .page-footer {
+            border-top: 2px solid #ccd0da;
+            padding: 20px;
+            text-align: center;
+            color: #6c6f85;
+            font-size: 12px;
+        }
+
+        .page-footer a {
+            color: #209fb5;
+            text-decoration: none;
+        }
+
+        .page-footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .page-header {
+                padding: 24px 16px 20px;
+            }
+
+            .page-header h1 {
+                font-size: 22px;
+            }
+
+            .container {
+                padding: 20px 16px 32px;
+            }
+
+            .category-btn {
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+
+            .demo-btn {
+                padding: 5px 10px;
+                font-size: 11px;
+            }
+
+            .vim-content {
+                padding: 20px 16px;
+                min-height: 120px;
+            }
+
+            .text-content {
+                font-size: 22px;
+            }
+
+            .line-number {
+                font-size: 18px;
+                margin-right: 12px;
+            }
+
+            .char {
+                min-width: 14px;
+                padding: 3px 2px;
+            }
+
+            .key-indicator {
+                bottom: 16px;
+                right: 16px;
+                padding: 10px 20px;
+                font-size: 18px;
+            }
+
+            .ctrl-btn {
+                padding: 8px 18px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="page-header">
+        <h1>Vim 操作動畫教學</h1>
+        <p class="subtitle">62 支互動式示範 — 搭配 6 篇系列文章</p>
+    </header>
+
+    <div class="container">
+        <div class="category-tabs" id="categoryTabs"></div>
+        <div class="article-link" id="articleLink"></div>
+        <div class="demo-buttons" id="demoButtons"></div>
+
+        <div class="vim-editor">
+            <div class="vim-title" id="title"></div>
+            <div class="vim-content" id="contentArea"></div>
+            <div class="vim-status">
+                <span id="mode">-- NORMAL --</span>
+                <span id="col">Col: 1</span>
+            </div>
+            <div class="key-indicator" id="keyIndicator"></div>
+        </div>
+
+        <div class="description" id="description">按 Play 開始播放</div>
+
+        <div class="controls">
+            <button class="ctrl-btn" onclick="play()">&#9654; Play</button>
+            <button class="ctrl-btn" onclick="nextDemo()">下一個 &rarr;</button>
+            <button class="speed-btn" onclick="setSpeed(0.25)">x0.25</button>
+            <button class="speed-btn" onclick="setSpeed(0.5)">x0.5</button>
+            <button class="speed-btn active" onclick="setSpeed(1)">x1</button>
+        </div>
+
+        <div class="key-point" id="keyPoint">
+            <h3>教學重點</h3>
+            <p id="keyPointText"></p>
+        </div>
+    </div>
+
+    <footer class="page-footer">
+        &copy; 2026 Cash Wu &middot; <a href="https://github.com/cashwu/vim-animation-demo" target="_blank" rel="noopener">GitHub</a>
+    </footer>
+
+    <script src="index-data.js"></script>
+    <script>
+        let currentCategory = 'article1';
+        let currentDemo = '1-01-hjkl';
+        let currentStep = 0;
+        let isPlaying = false;
+        let playInterval = null;
+        let playbackSpeed = 1;
+
+        const categoryLabels = {
+            article1: '1. 模式與移動（12）',
+            article2: '2. 編輯基礎（15）',
+            article3: '3. Visual Mode（8）',
+            article4: '4. 語法系統（11）',
+            article5: '5. 搜尋技巧（9）',
+            article6: '6. 效率倍增（7）',
+        };
+
+        const categoryArticles = {
+            article1: { title: 'Vim 生存指南：模式與移動', url: 'https://blog.cashwu.com/blog/2026/vim-survival-guide' },
+            article2: { title: 'Vim 編輯基礎：輸入、刪除和複製貼上', url: 'https://blog.cashwu.com/blog/2026/vim-editing-art' },
+            article3: { title: 'Vim 選取模式：三種 Visual Mode', url: 'https://blog.cashwu.com/blog/2026/vim-visual-mode' },
+            article4: { title: 'Vim 語法系統：動詞 + 量詞 + 名詞', url: 'https://blog.cashwu.com/blog/2026/vim-grammar-system' },
+            article5: { title: 'Vim 搜尋技巧：快速定位與取代', url: 'https://blog.cashwu.com/blog/2026/vim-search-skills' },
+            article6: { title: 'Vim 效率倍增：重複與自動化', url: 'https://blog.cashwu.com/blog/2026/vim-efficiency' },
+        };
+
+        function initCategoryTabs() {
+            var tabsDiv = document.getElementById('categoryTabs');
+            var html = '';
+            Object.keys(categoryLabels).forEach(function(cat) {
+                var active = cat === currentCategory ? ' active' : '';
+                html += '<button class="category-btn' + active + '" data-cat="' + cat + '">' + categoryLabels[cat] + '</button>';
+            });
+            tabsDiv.textContent = '';
+            tabsDiv.insertAdjacentHTML('beforeend', html);
+            tabsDiv.addEventListener('click', function(e) {
+                if (e.target.dataset.cat) showCategory(e.target.dataset.cat, e.target);
+            });
+        }
+
+        function showCategory(cat, btn) {
+            currentCategory = cat;
+            document.querySelectorAll('.category-btn').forEach(function(b) { b.classList.remove('active'); });
+            if (btn) btn.classList.add('active');
+
+            var article = categoryArticles[cat];
+            var linkDiv = document.getElementById('articleLink');
+            linkDiv.innerHTML = '<a href="' + article.url + '" target="_blank" rel="noopener">' + article.title + ' &rarr;</a>';
+
+            var buttonsDiv = document.getElementById('demoButtons');
+            var html = '';
+            categories[cat].forEach(function(id) {
+                html += '<button class="demo-btn" data-id="' + id + '">' + demos[id].title.split(' - ')[0] + '</button>';
+            });
+            buttonsDiv.textContent = '';
+            buttonsDiv.insertAdjacentHTML('beforeend', html);
+            buttonsDiv.addEventListener('click', function(e) {
+                if (e.target.dataset.id) playDemo(e.target.dataset.id);
+            });
+
+            playDemo(categories[cat][0]);
+        }
+
+        function renderContent(content, cursor, selection, selectionMode, mode) {
+            var area = document.getElementById('contentArea');
+            area.textContent = '';
+            var isMultiLine = content.includes('\n');
+            var lines = isMultiLine ? content.split('\n') : [content];
+            var cursorLine = Array.isArray(cursor) ? cursor[0] : 0;
+            var cursorCol = Array.isArray(cursor) ? cursor[1] : cursor;
+            var isInsert = mode === 'INSERT';
+
+            // Normalize selection to [sL, sC, eL, eC]
+            var sel = null;
+            if (selection) {
+                if (selection.length === 4) {
+                    sel = selection;
+                } else {
+                    sel = [0, selection[0], 0, selection[1]];
+                }
+            }
+            var sMode = selectionMode || 'char';
+
+            function isSelected(li, ci) {
+                if (!sel) return false;
+                var sL = sel[0], sC = sel[1], eL = sel[2], eC = sel[3];
+                if (sMode === 'line') {
+                    var minL = Math.min(sL, eL), maxL = Math.max(sL, eL);
+                    return li >= minL && li <= maxL;
+                }
+                if (sMode === 'block') {
+                    var minL2 = Math.min(sL, eL), maxL2 = Math.max(sL, eL);
+                    var minC = Math.min(sC, eC), maxC = Math.max(sC, eC);
+                    return li >= minL2 && li <= maxL2 && ci >= minC && ci <= maxC;
+                }
+                // char mode
+                if (sL === eL) return li === sL && ci >= Math.min(sC, eC) && ci <= Math.max(sC, eC);
+                var fMinL = Math.min(sL, eL), fMaxL = Math.max(sL, eL);
+                var fSC = sL < eL ? sC : eC, fEC = sL < eL ? eC : sC;
+                if (li === fMinL) return ci >= fSC;
+                if (li === fMaxL) return ci <= fEC;
+                return li > fMinL && li < fMaxL;
+            }
+
+            function createCursorSpan() {
+                var sp = document.createElement('span');
+                sp.className = isInsert ? 'char cursor-insert' : 'char cursor';
+                sp.textContent = '\u00a0';
+                return sp;
+            }
+
+            function createEndCursor() {
+                var sp = document.createElement('span');
+                if (isInsert) {
+                    sp.style.display = 'inline-block';
+                    sp.style.width = '3px';
+                    sp.style.alignSelf = 'stretch';
+                    sp.style.background = '#dc8a78';
+                    sp.style.borderRadius = '2px';
+                    sp.style.margin = '2px 0';
+                } else {
+                    sp.className = 'char cursor';
+                    sp.textContent = '\u00a0';
+                }
+                return sp;
+            }
+
+            if (isMultiLine) {
+                area.style.flexDirection = 'column';
+                area.style.alignItems = 'flex-start';
+                area.style.justifyContent = 'center';
+                for (var li = 0; li < lines.length; li++) {
+                    var row = document.createElement('div');
+                    row.style.display = 'flex';
+                    row.style.alignItems = 'center';
+                    row.style.minHeight = '38px';
+
+                    var ln = document.createElement('span');
+                    ln.className = 'line-number';
+                    ln.style.minWidth = '30px';
+                    ln.style.textAlign = 'right';
+                    ln.style.color = li === cursorLine ? '#4c4f69' : '#6c6f85';
+                    ln.textContent = (li + 1);
+                    row.appendChild(ln);
+
+                    var lineDiv = document.createElement('div');
+                    lineDiv.className = 'text-content';
+                    var lineChars = lines[li];
+                    if (lineChars.length === 0 && li === cursorLine) {
+                        lineDiv.appendChild(createCursorSpan());
+                    } else {
+                        for (var ci = 0; ci < lineChars.length; ci++) {
+                            var sp2 = document.createElement('span');
+                            var cls = 'char';
+                            if (li === cursorLine && ci === cursorCol) cls += isInsert ? ' cursor-insert' : ' cursor';
+                            if (isSelected(li, ci)) cls += ' selected';
+                            sp2.className = cls;
+                            sp2.textContent = lineChars[ci] === ' ' ? '\u00a0' : lineChars[ci];
+                            lineDiv.appendChild(sp2);
+                        }
+                        if (li === cursorLine && cursorCol >= lineChars.length) {
+                            lineDiv.appendChild(createEndCursor());
+                        }
+                    }
+                    row.appendChild(lineDiv);
+                    area.appendChild(row);
+                }
+            } else {
+                area.style.flexDirection = 'row';
+                area.style.alignItems = 'center';
+                area.style.justifyContent = 'center';
+                var lnSingle = document.createElement('span');
+                lnSingle.className = 'line-number';
+                lnSingle.textContent = '1';
+                area.appendChild(lnSingle);
+
+                var textDiv = document.createElement('div');
+                textDiv.className = 'text-content';
+                if (content.length === 0) {
+                    textDiv.appendChild(createCursorSpan());
+                } else {
+                    for (var i = 0; i < content.length; i++) {
+                        var sp4 = document.createElement('span');
+                        var cls2 = 'char';
+                        if (i === cursorCol) cls2 += isInsert ? ' cursor-insert' : ' cursor';
+                        if (isSelected(0, i)) cls2 += ' selected';
+                        sp4.className = cls2;
+                        sp4.textContent = content[i] === ' ' ? '\u00a0' : content[i];
+                        textDiv.appendChild(sp4);
+                    }
+                    if (cursorCol >= content.length) {
+                        textDiv.appendChild(createEndCursor());
+                    }
+                }
+                area.appendChild(textDiv);
+            }
+
+            if (isMultiLine) {
+                document.getElementById('col').textContent = 'Ln: ' + (cursorLine + 1) + ', Col: ' + (cursorCol + 1);
+            } else {
+                document.getElementById('col').textContent = 'Col: ' + (cursorCol + 1);
+            }
+        }
+
+        function showKey(key) {
+            var indicator = document.getElementById('keyIndicator');
+            if (key) {
+                indicator.textContent = key;
+                indicator.classList.add('show');
+            } else {
+                indicator.classList.remove('show');
+            }
+        }
+
+        function showStep(step) {
+            renderContent(step.content, step.cursor, step.selection, step.selectionMode, step.mode);
+            document.getElementById('description').textContent = step.desc;
+            document.getElementById('mode').textContent = step.statusLeft || ('-- ' + (step.mode || 'NORMAL') + ' --');
+            if (step.statusRight) {
+                document.getElementById('col').textContent = step.statusRight;
+            }
+            showKey(step.key);
+        }
+
+        function playDemo(name) {
+            currentDemo = name;
+            currentStep = 0;
+            isPlaying = false;
+            if (playInterval) clearInterval(playInterval);
+
+            var demo = demos[name];
+            document.getElementById('title').textContent = demo.title;
+            document.getElementById('keyPointText').textContent = '';
+            document.getElementById('keyPointText').insertAdjacentHTML('beforeend', demo.keyPoint);
+            showStep(demo.steps[0]);
+
+            document.querySelectorAll('.demo-btn').forEach(function(btn) {
+                btn.classList.toggle('active', btn.dataset.id === name);
+            });
+        }
+
+        function startInterval() {
+            var demo = demos[currentDemo];
+            playInterval = setInterval(function() {
+                currentStep++;
+                if (currentStep >= demo.steps.length) {
+                    clearInterval(playInterval);
+                    playInterval = null;
+                    isPlaying = false;
+                    return;
+                }
+                showStep(demo.steps[currentStep]);
+            }, 700 / playbackSpeed);
+        }
+
+        function play() {
+            if (playInterval) clearInterval(playInterval);
+            currentStep = 0;
+            isPlaying = true;
+            var demo = demos[currentDemo];
+            showStep(demo.steps[0]);
+            startInterval();
+        }
+
+        function setSpeed(speed) {
+            playbackSpeed = speed;
+            document.querySelectorAll('.speed-btn').forEach(function(b) { b.classList.remove('active'); });
+            document.querySelector('.speed-btn[onclick="setSpeed(' + speed + ')"]').classList.add('active');
+            if (isPlaying && playInterval) {
+                clearInterval(playInterval);
+                startInterval();
+            }
+        }
+
+        function nextDemo() {
+            var list = categories[currentCategory];
+            var idx = list.indexOf(currentDemo);
+            var next = (idx + 1) % list.length;
+            playDemo(list[next]);
+        }
+
+        initCategoryTabs();
+        showCategory('article1', document.querySelector('.category-btn'));
+    </script>
+</body>
+</html>
